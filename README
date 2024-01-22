@@ -1,0 +1,66 @@
+*** Technical Reference Manual ***
+https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf
+
+*** datasheet ***
+https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf
+
+*** Non-Volatile Storage Library ***
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_flash.html?highlight=nvs_flash_init#_CPPv414nvs_flash_initv
+
+*** WIFI ***
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/network/esp_wifi.html
+https://www.youtube.com/watch?v=frATxnbOKks
+>>>>Note:Trang 628 rm phần 29.On­Chip Sensors and Analog Signal Processing
+        - Khi sử dụng module Wifi thì sử dụng SAR ADC2 , không thể sử dụng các chân SAR ADC2 để đo tín hiệu tương tự 
+        Xem rõ chi tiết các chân ở rm trang 634 
+>>>> Erorr when autoconnect wifi
+ESP_ERROR_CHECK failed: esp_err_t 0x103 (ESP_ERR_INVALID_STATE) at 0x400d2408
+file: "src/main.c" line 143
+func: wifi_init_sta
+expression: esp_event_loop_create_default()
+abort() was called at PC 0x40089f0f on core 0
+Backtrace: 0x40082b5e:0x3ffbc120 0x40089f19:0x3ffbc140 0x400912aa:0x3ffbc160 0x40089f0f:0x3ffbc1d0 0x400d2408:0x3ffbc200 0x400d2597:0x3ffbc3b0 0x4008cb95:0x3ffbc3d0
+>>>> Solution: 
+    ESP_ERROR_CHECK(esp_netif_init());
+    if(checkNetif==false){
+        ESP_ERROR_CHECK(esp_event_loop_create_default());
+        esp_netif_create_default_wifi_sta();
+        checkNetif=true;
+    }
+>>>> Lỗi tràn heap 
+ESP_ERROR_CHECK failed: esp_err_t 0x101 (ESP_ERR_NO_MEM) at 0x400d2b10
+file: "src/main.c" line 130
+func: wifi_init_sta
+expression: esp_wifi_init(&cfg)
+abort() was called at PC 0x40089f0f on core 0
+Backtrace: 0x40082b9e:0x3ffb9fd0 0x40089f19:0x3ffb9ff0 0x400912aa:0x3ffba010 0x40089f0f:0x3ffba080
+ 0x400d2b10:0x3ffba0b0 0x400d2ca3:0x3ffba260 0x4008cf98:0x3ffba290 0x4008cb95:0x3ffba2c0
+ >>>> Solution 
+ 
+*** TCP/IP ***
+https://docs.espressif.com/projects/esp-idf/en/release-v4.0/api-reference/network/tcpip_adapter.html
+
+*** MQTT ***
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/protocols/mqtt.html
+
+*** ADC ***
+Trang 38 datasheet, phần 3.9.1 Analog Peripherals:
+https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf
+
+Tham khảo thư viện
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc_oneshot.html#
+
+
+
+*** I2C and LCD1602 ***
+Trang 284 rm, phần 11.I2C Controller 
+Trang 36 datasheet, phần 3.8 Digital Peripherals 
+ * [HD44780 datasheet](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf)
+ * [PCF8574A Remote 8-bit I/O Expander for I2C Bus](http://www.ti.com/lit/ds/symlink/pcf8574a.pdf)
+
+*** DHT11 ***
+https://www.laptrinhdientu.com/2022/06/DHT11.html
+https://www.mouser.com/datasheet/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf
+
+
+
