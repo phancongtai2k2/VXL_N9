@@ -1,15 +1,3 @@
-
-/**
- * @file LCD.h
- * @author LeThanhLuan_HUST (luan172002@gmail.com)
- * @brief LCD1602 (HD44780) with module i2c
- * @version 0.1
- * @date 2023-12-07
- * 
- * @copyright Copyright (c) 2023
- * 
- */
-
 #ifndef _LCD_H
 #define _LCD_H
 

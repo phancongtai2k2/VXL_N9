@@ -1,13 +1,3 @@
-/**
- * @file wifi_esp.h
- * @author LeThanhLuan_HUST (luan172002@gmail.com)
- * @brief wifi esp32wroom32
- * @version 0.1
- * @date 2023-12-07
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -59,29 +49,8 @@
 #define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WAPI_PSK
 #endif
 
-
-/* The event group allows multiple bits for each event, but we only care about two events:
- * - we are connected to the AP with an IP
- * - we failed to connect after the maximum amount of retries */
 #define DEFAULT_SCAN_LIST_SIZE 5
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
-// /**
-//  * @brief Function: Station mode (aka STA mode or Wi-Fi client mode). ESP32 connects to an access point.
-//  *         Chế độ này sử dụng ESP32 là trạm (station) kết nối wifi 
-//  */
-// void wifi_init_sta(uint8_t *check);
-
-// /**
-//  * @brief Function: AP mode (aka Soft-AP mode or Access Point mode). Stations connect to the ESP32.
-//  *        Chế độ này sử dụng ESP32 như một trạm phát wifi
-//  */
-// void wifi_init_softap(void);
-
-// /**
-//  * @brief Function: Scanning for access points (active & passive scanning).
-//  *        Hàm này sử dụng để tìm kiếm điểm kết nối wifi chủ động hoặc bị động
-//  */
-// void wifi_scan(void);
 
 #endif

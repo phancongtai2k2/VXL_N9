@@ -23,7 +23,7 @@
 #define TAG "RF433"
 
 #define BUZZER_PIN 2
-#define DHT11_PIN 4 
+#define DHT11_PIN 4  
 #define LED_WIFI_PIN 12
 
 #define WEB_SERVER "api.thingspeak.com"
@@ -164,7 +164,7 @@ void wifi_init_sta()
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(__func__, "connected to ap SSID:%s password:%s",
                  EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
-        printf("connecting mqtt broker");
+     
     } else if (bits & WIFI_FAIL_BIT) {
         ESP_LOGI(__func__, "Failed to connect to SSID:%s, password:%s",
                  EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
@@ -188,24 +188,40 @@ void checkFire_DS()
 
 void readDataFromSensor()
 {   
-        printf("Read MQ6.\n");
-        mq6 = MQ6_readData();
         printf("Read DHT11.\n");
         dht11 = DHT11_read();
 
+        if (dht11.humidity < 0 || dht11.temperature < 0)
+        {
+            dht11.humidity = 0;
+            dht11.temperature = 0;
+        }
+
+        printf("Read MQ6.\n");
+        mq6 = MQ6_readData();
+        if(mq6.ppm >= 10000){
+            mq6.ppm = 10000;
+        }
+        ESP_LOGI(__func__,"Do am: %d, Nhiet do: %d, PPM: %d\n",dht11.humidity,dht11.temperature,mq6.ppm);
+
         // Tính Toán độ chính xác của MQ6 dựa vào nhiệt độ //
-        float y_percent_temp ;
-        y_percent_temp = 1/48000 * pow(dht11.temperature,3) - 5/1600 * pow(dht11.temperature,2) + 125/1200 * dht11.temperature -0.234 ;
+        double y_percent_temp ;
+        y_percent_temp = (((double)1/480) * pow( (double) dht11.temperature,3.0) - ((double)5/16) * pow((double)dht11.temperature,2.0) + ((double)125/12) * (double) dht11.temperature - 0.234)/100 ;
+        printf("------PHAN TRAM NHIET DO------- %lf \n\n" ,y_percent_temp);
 
         // Tính Toán độ chính xác của MQ6 dựa vào độ ẩm //
-
-        float y_percent_hum ;
-        y_percent_hum = -4/517500 * pow(dht11.humidity,3) +16/34500 * pow(dht11.humidity,2) + 592/20700 * dht11.humidity - 16/23 -0.00306 ;
+        double y_percent_hum ;
+        y_percent_hum = (((double)-4/5175) * pow((double)dht11.humidity,3.0) + ((double)16/345) * pow((double)dht11.humidity,2.0) + ((double)592/207) * (double)dht11.humidity - ((double)1640/23) - 0.306)/100 ;
+        printf("-----PHAN TRAM ĐỘ ẨM-------- %lf \n\n" ,y_percent_hum);
 
         // Sử dụng DS tính độ tin cậy của cảm biến MQ6 //
 
-        float y_percent_mq ;
-        y_percent_mq= (int) (y_percent_hum * y_percent_temp)/(1-(((1-y_percent_hum)*y_percent_temp)+(1-y_percent_temp)*y_percent_hum));
+        double y_percent_mq ;
+        y_percent_mq= (y_percent_hum * y_percent_temp)/(1-(((1-y_percent_hum)*y_percent_temp)+(1-y_percent_temp)*y_percent_hum));
+        printf("-----PHAN TRAM MQ-------- %lf \n\n" ,y_percent_mq);
+       
+     
+
 
         // DS cho đa cảm biến //
 
@@ -214,11 +230,15 @@ void readDataFromSensor()
 
         float prob_DSth = (t*h + 0.08*h + 0.15*t) / (1-((1-h-0.15)*t + (1-t-0.08)*h));
 
-        float ppm = mq6.ppm/1000;
         // Độ trị tin cậy MQ6 //
-        ppm = y_percent_mq * ppm ;
+        double ppm0 =  y_percent_mq * mq6.ppm ;
 
-        prob_DS = (ppm*prob_DSth + 0.05*prob_DSth + 0.012*ppm) / (1-((1-prob_DSth-0.012)*ppm + (1-ppm-0.05)*prob_DSth));
+        printf("--------------------------- %f \n\n" ,y_percent_mq);
+        printf("--------------------------- %lf \n\n" ,ppm0);
+
+        float ppm1 = (ppm0-300)/(10000-300);
+
+        prob_DS = (ppm1*prob_DSth + 0.05*prob_DSth + 0.012*ppm1) / (1-((1-prob_DSth-0.012)*ppm1 + (1-ppm1-0.05)*prob_DSth));
 
         checkFire_DS();
 }
@@ -263,8 +283,6 @@ void app_main(void)
     /* Initialize MQ6 */
     MQ6_init();   
 
-
-    //  Bật khi dùng lcd    //
     /* Initialize LCD1602 */
     lcd_info = i2c_lcd1602_malloc();
     lcd1602_init(lcd_info);
@@ -272,40 +290,22 @@ void app_main(void)
     while(1){
         ESP_LOGI(__func__,"/*----------------------- WHILE LOOP BEGIN --------------------*/");
         //time start 
-        vTaskDelay(100/portTICK_PERIOD_MS);
         uint64_t start_time = esp_timer_get_time();
-        
-        
-        if(dht11.status == DHT11_OK){
-            printf("Do am: %d, Nhiet do: %d, PPM: %d\n",dht11.humidity,dht11.temperature,mq6.ppm);
-            
-        // Bật khi dùng lcd //
-            lcd1602_updateScreen(lcd_info,&dht11,&mq6);
-
-        }else if(dht11.status == DHT11_CRC_ERROR ){
-            printf("CRC error reading data from DHT11.\n");
-
-        }else if (dht11.status == DHT11_TIMEOUT_ERROR) {
-            printf("Timeout reading data from DHT11.\n");
-        }
         
         readDataFromSensor();
 
-        vTaskDelay(10000/portTICK_PERIOD_MS);  // Wifi check here
+        lcd1602_updateScreen(lcd_info,&dht11,&mq6);
+
+        vTaskDelay(2500/portTICK_PERIOD_MS);  // Wifi check here
 
         printf("Connect to ThinkSpeak\n");
         send_to_thingspeak(dht11.temperature,dht11.humidity,mq6.ppm,prob_DS);
-        printf("Close to ThinkSpeak\n");
 
         //get time end
         uint64_t end_time = esp_timer_get_time();
         uint64_t execution_time = end_time - start_time;
         printf("Elapsed time : %llu miliseconds\n", execution_time/1000);    
         ESP_LOGI(__func__,"/* ----------------------- WHILE LOOP END --------------------*/\n");   
-
-        vTaskDelay(1000);
-
-    
     }
 }
 

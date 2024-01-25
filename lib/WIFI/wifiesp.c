@@ -1,13 +1,3 @@
-/**
- * @file wifiesp.c
- * @author LeThanhLuan_HUST (luan172002@gmail.com)
- * @brief Wifi Configuration
- * @version 0.1
- * @date 2023-12-07
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #include "wifiesp.h"
 
 /* FreeRTOS event group to signal when we are connected*/

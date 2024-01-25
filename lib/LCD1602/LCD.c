@@ -1,13 +1,3 @@
-/**
- * @file LCD.c
- * @author LeThanhLuan_HUST (luan172002@gmail.com)
- * @brief LCD1602 with module i2c
- * @version 0.1
- * @date 2023-12-07
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
