@@ -220,9 +220,6 @@ void readDataFromSensor()
         y_percent_mq= (y_percent_hum * y_percent_temp)/(1-(((1-y_percent_hum)*y_percent_temp)+(1-y_percent_temp)*y_percent_hum));
         printf("-----PHAN TRAM MQ-------- %lf \n\n" ,y_percent_mq);
        
-     
-
-
         // DS cho đa cảm biến //
 
         float t = (float)dht11.temperature/50;
@@ -230,11 +227,8 @@ void readDataFromSensor()
 
         float prob_DSth = (t*h + 0.08*h + 0.15*t) / (1-((1-h-0.15)*t + (1-t-0.08)*h));
 
-        // Độ trị tin cậy MQ6 //
+        // mq6_belief //
         double ppm0 =  y_percent_mq * mq6.ppm ;
-
-        printf("--------------------------- %f \n\n" ,y_percent_mq);
-        printf("--------------------------- %lf \n\n" ,ppm0);
 
         float ppm1 = (ppm0-300)/(10000-300);
 
