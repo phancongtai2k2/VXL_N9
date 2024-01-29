@@ -10,32 +10,6 @@ https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storag
 *** WIFI ***
 https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/network/esp_wifi.html
 https://www.youtube.com/watch?v=frATxnbOKks
->>>>Note:Trang 628 rm phần 29.On­Chip Sensors and Analog Signal Processing
-        - Khi sử dụng module Wifi thì sử dụng SAR ADC2 , không thể sử dụng các chân SAR ADC2 để đo tín hiệu tương tự 
-        Xem rõ chi tiết các chân ở rm trang 634 
->>>> Erorr when autoconnect wifi
-ESP_ERROR_CHECK failed: esp_err_t 0x103 (ESP_ERR_INVALID_STATE) at 0x400d2408
-file: "src/main.c" line 143
-func: wifi_init_sta
-expression: esp_event_loop_create_default()
-abort() was called at PC 0x40089f0f on core 0
-Backtrace: 0x40082b5e:0x3ffbc120 0x40089f19:0x3ffbc140 0x400912aa:0x3ffbc160 0x40089f0f:0x3ffbc1d0 0x400d2408:0x3ffbc200 0x400d2597:0x3ffbc3b0 0x4008cb95:0x3ffbc3d0
->>>> Solution: 
-    ESP_ERROR_CHECK(esp_netif_init());
-    if(checkNetif==false){
-        ESP_ERROR_CHECK(esp_event_loop_create_default());
-        esp_netif_create_default_wifi_sta();
-        checkNetif=true;
-    }
->>>> Lỗi tràn heap 
-ESP_ERROR_CHECK failed: esp_err_t 0x101 (ESP_ERR_NO_MEM) at 0x400d2b10
-file: "src/main.c" line 130
-func: wifi_init_sta
-expression: esp_wifi_init(&cfg)
-abort() was called at PC 0x40089f0f on core 0
-Backtrace: 0x40082b9e:0x3ffb9fd0 0x40089f19:0x3ffb9ff0 0x400912aa:0x3ffba010 0x40089f0f:0x3ffba080
- 0x400d2b10:0x3ffba0b0 0x400d2ca3:0x3ffba260 0x4008cf98:0x3ffba290 0x4008cb95:0x3ffba2c0
- >>>> Solution 
  
 *** TCP/IP ***
 https://docs.espressif.com/projects/esp-idf/en/release-v4.0/api-reference/network/tcpip_adapter.html
